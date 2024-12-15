@@ -1,0 +1,15 @@
+{
+  "studenst" : [
+    {
+      "name":"hema",
+      "usn": 87669,
+      "college":"sce"
+    },
+    {
+      "name":"shwetha",
+      "usn": 87668,
+      "college":"sce"
+
+    }
+  ]
+}

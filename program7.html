@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSON/CSV Converter and Hash Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<style> body {
+font-family: Arial, sans-serif;
+
+
+line-height: 1.6;
+margin: 0; padding: 20px;
+background-color: #f4f4f4;
+}
+.container {
+ 
+max-width: 800px; margin: auto;
+background: white; padding: 20px; border-radius: 5px;
+box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+h1 {
+color: #333;
+}
+textarea {
+width: 100%; height: 100px;
+
+margin-bottom: 10px;
+}
+button {
+background-color: #4CAF50; color: white;
+padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer;
+ 
+margin-right: 10px;
+}
+button:hover {
+background-color: #45a049;
+}
+#result {
+margin-top: 20px; padding: 10px;
+background-color: #e7e7e7; border-radius: 4px;
+
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>JSON/CSV Converter and Hash Generator</h1>
+<h2>(a) Convert JSON to JavaScript Object</h2>
+<textarea id="jsonInput" placeholder="Enter JSON here"></textarea>
+<button onclick="convertJsonToObject()">Convert to Object</button>
+
+<h2>(b) Convert JSON to Date</h2>
+<textarea id="jsonDateInput" placeholder='Enter JSON date string (e.g., {"date": "2023-05-15T12:00:00Z"})'></textarea>
+<button onclick="convertJsonToDate()">Convert to Date</button>
+
+<h2>(c) Convert JSON to CSV and CSV to JSON</h2>
+<textarea id="dataInput" placeholder="Enter JSON or CSV here"></textarea>
+<button onclick="convertJsonToCsv()">JSON to CSV</button>
+<button onclick="convertCsvToJson()">CSV to JSON</button>
+
+<h2>(d) Create Hash from String</h2>
+<textarea id="hashInput" placeholder="Enter string to hash"></textarea>
+<button onclick="createHash()">Generate Hash</button>
+<div id="result"></div>
+</div>
+
+<script>
+function convertJsonToObject() { try {
+  //Retrieves the value from an input element (e.g., a <textarea> or <input> field) with the ID jsonInput.
+const jsonInput = document.getElementById('jsonInput').value; 
+//Converts the JSON string into a JavaScript object using JSON.parse
+const jsObject = JSON.parse(jsonInput); 
+//Converts the JavaScript object back to a formatted JSON string using JSON.stringify for display purposes.
+//null and 2 are used to pretty-print the object with an indentation of 2 spaces.
+document.getElementById('result').innerText = 'Converted Object: ' + JSON.stringify(jsObject, null, 2);
+} catch (error) {
+document.getElementById('result').innerText = 'Error: ' + error.message;
+}
+}
+function convertJsonToDate() { try {
+ //Retrieves JSON data from an input field with the ID jsonDateInput
+const jsonInput = document.getElementById('jsonDateInput').value;
+//Converts the JSON string into a JavaScript object.
+ const jsObject = JSON.parse(jsonInput);
+ //Accesses the date field in the parsed object and passes it to the Date constructor.
+//Converts the string representation of the date into a Date object.
+const date = new Date(jsObject.date);
+//Converts the Date object to a human-readable string using toString() and displays it.
+document.getElementById('result').innerText = 'Converted Date: ' + date.toString();
+} catch (error) {
+document.getElementById('result').innerText = 'Error: ' + error.message;
+}
+}
+function convertJsonToCsv() { try {
+  //Retrieves the JSON string from an input field with the ID dataInput
+const jsonInput = document.getElementById('dataInput').value; 
+//Converts the JSON string into a JavaScript object.
+//Assumes the parsed object is an array of objects.
+const jsObject = JSON.parse(jsonInput);
+//Extracts the keys from the first object in the array, assuming all objects have the same structure. These keys become the CSV headers.
+const headers = Object.keys(jsObject[0]); 
+//Header Row: Combines the headers into a single string separated by commas.
+//Data Rows: Iterates through the array of objects (jsObject) and:
+//Maps each row to an array of field values corresponding to the headers.
+//Uses JSON.stringify to handle fields with special characters (e.g., commas, quotes).
+//Joins the values with commas to form a CSV row.
+const csvRows = [
+headers.join(','),
+...jsObject.map(row => headers.map(fieldName => JSON.stringify(row[fieldName])).join(','))
+];
+//Combines all rows (headers + data) into a single string, separated by newline characters.
+const csvString = csvRows.join('\n');
+//Displays the CSV string in a result container with the ID result
+document.getElementById('result').innerText = 'Converted CSV:\n' + csvString;
+} catch (error) {
+document.getElementById('result').innerText = 'Error: ' + error.message;
+}
+ 
+}
+function convertCsvToJson() { try {
+const csvInput = document.getElementById('dataInput').value; const lines = csvInput.split('\n');
+const headers = lines[0].split(',');
+
+
+const jsonArray = lines.slice(1).map(line => { const values = line.split(',');
+return headers.reduce((obj, header, index) => { obj[header] = values[index];
+return obj;
+}, {});
+});
+document.getElementById('result').innerText = 'Converted JSON:\n' + JSON.stringify(jsonArray, null, 2);
+} catch (error) {
+document.getElementById('result').innerText = 'Error: ' + error.message;
+}
+}
+function createHash() { try {
+const input = document.getElementById('hashInput').value; 
+const hash = CryptoJS.SHA256(input);
+ 
+document.getElementById('result').innerText = 'Generated Hash (SHA-256): ' + hash;
+} catch (error) {
+document.getElementById('result').innerText = 'Error: ' + error.message;
+}
+}
+</script>
+</body>
+</html>
+
+
+
+
